@@ -61,7 +61,55 @@ Cortical responses to sensory stimuli are highly variable, and sensory cortex ex
 
 
 
-The primary scientific question of interest is to :
+
+`faceSVD`
+`motionMask`
+
+The nine regions for Kreubs in the mouse brain are:
+`stall.CP` Caudate Putamen
+`stall.FrMoCtx` Frontal Motor Cortex
+`stall.HPF` Hippocampal Formation
+`stall.LS`Lateral Septum
+`stall.MB` Midbrain
+`stall.SC` Superior Colliculus
+`stall.SomMoCtxx` Somatomotor Cortex
+`stall.TH` Thalamus
+`stall.V1` Primary Visual Cortex
+
+The data set contains spike trains of neurons in nine regions in the mouse brain
+
+```{r}
+
+brain_regions= ls(exp_data)[-c(1:3)]; 
+n_time= dim(exp_data$faceSVD)[2];
+n_sv = dim(exp_data$faceSVD)[1];
+```
+
+
+
+
+
+```{r}
+i_region = 1; # pick a region
+time_range = c(100, 500); # Pick a time window (indices of time frame)
+
+### Extract the spike train for this region
+spikes_this_region = exp_data[[brain_regions[1]]]
+
+### Visualize the spike train 
+n_neurons = dim(spikes_this_region)[1]; 
+plot(x=0,y=0,pch=16,col="white",type="l",lwd=3,ylim=c(0,n_neurons),xlim=time_range,cex.lab=1,cex.main=1,ylab='Neuron',xlab='Time frame',main='Spikes') #yaxt='n',xaxt='n',
+
+for(i_neuron in 1:n_neurons){
+  spk_times =which(spikes_this_region[i_neuron,time_range[1]:time_range[2]]>0);
+  if (length(spk_times)>0){
+    points(y=rep(i_neuron,length(spk_times)),x=spk_times+time_range[1]-1,col="#000000",pch='.',cex=2)
+  }
+}
+
+```
+
+
 
 
 ## Statistical questions of interest
