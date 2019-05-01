@@ -58,10 +58,11 @@ A brief introduction of cortical responses to sensory stimuli is as follows:
 ***
 Cortical responses to sensory stimuli are highly variable, and sensory cortex exhibits intricate spontaneous activity even without external sensory input. Cortical variability and spontaneous activity have been variously proposed to represent random noise, recall of prior experience, or encoding of ongoing behavioral and cognitive variables. Here, by recording over 10,000 neurons in mouse visual cortex, we show that spontaneous activity reliably encodes a high-dimensional latent state, which is partially related to the ongoing behavior of the mouse and is represented not just in visual cortex but across the forebrain. Sensory inputs do not interrupt this ongoing signal, but add onto it a representation of visual stimuli in orthogonal dimensions. Thus, visual cortical population activity, despite its apparently noisy structure, reliably encodes an orthogonal fusion of sensory and multidimensional behavioral information.
 ***
-
-
-
-The primary scientific question of interest is to :
+ bobobobobopsdkjflwhef
+ ef
+ fa
+ 
+ fr
 
 
 ## Statistical questions of interest
