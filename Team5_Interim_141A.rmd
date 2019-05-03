@@ -104,11 +104,10 @@ n_sv = dim(exp_data$faceSVD)[1];
 
 
 
-```{r}
-i_region = 1; # pick a region
+```{r, echo = FALSE, eval = TRUE}
 time_range = c(100, 500); # Pick a time window (indices of time frame)
 
-### Extract the spike train for this region
+### Extract the spike train for region 1
 spikes_this_region = exp_data[[brain_regions[1]]]
 
 ### Visualize the spike train 
@@ -121,11 +120,37 @@ for(i_neuron in 1:n_neurons){
     points(y=rep(i_neuron,length(spk_times)),x=spk_times+time_range[1]-1,col="#000000",pch='.',cex=2)
   }
 }
-
 ```
 
+```{r, echo = FALSE, eval= TRUE}
+### Extract the spike train for reg 2
+spikes_this_region = exp_data[[brain_regions[2]]]
 
+### Visualize the spike train 
+n_neurons = dim(spikes_this_region)[1]; 
+plot(x=0,y=0,pch=16,col="white",type="l",lwd=3,ylim=c(0,n_neurons),xlim=time_range,cex.lab=1,cex.main=1,ylab='Neuron',xlab='Time frame',main='Spikes') #yaxt='n',xaxt='n',
+for(i_neuron in 1:n_neurons){
+  spk_times =which(spikes_this_region[i_neuron,time_range[1]:time_range[2]]>0);
+  if (length(spk_times)>0){
+    points(y=rep(i_neuron,length(spk_times)),x=spk_times+time_range[1]-1,col="#000000",pch='.',cex=1)
+  }
+}
+```
 
+```{r, echo = FALSE, eval= TRUE}
+### Extract the spike train for reg 3
+spikes_this_region = exp_data[[brain_regions[3]]]
+
+### Visualize the spike train 
+n_neurons = dim(spikes_this_region)[1]; 
+plot(x=0,y=0,pch=16,col="white",type="l",lwd=3,ylim=c(0,n_neurons),xlim=time_range,cex.lab=1,cex.main=1,ylab='Neuron',xlab='Time frame',main='Spikes') #yaxt='n',xaxt='n',
+for(i_neuron in 1:n_neurons){
+  spk_times =which(spikes_this_region[i_neuron,time_range[1]:time_range[2]]>0);
+  if (length(spk_times)>0){
+    points(y=rep(i_neuron,length(spk_times)),x=spk_times+time_range[1]-1,col="#000000",pch='.',cex=1)
+  }
+}
+```
 
 
 ## Statistical questions of interest
