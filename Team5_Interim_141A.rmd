@@ -93,6 +93,16 @@ The nine regions for Kreubs in the mouse brain are:
 
 The data set contains spike trains of neurons in nine regions of the mouse brain. Each corresponding column represents a specific region of the brain; for example, the Caudate Putamen
 
+
+
+```{r, fig.width=50, fig.height=50,echo=FALSE}
+#Image for the regions of the brain
+library(png)
+library(grid)
+img <- readPNG("/Users/christinathai/Desktop/R_programming/STA_141A/Project/mouse_brain.png")
+ grid.raster(img)
+```
+
 ```{r}
 
 brain_regions= ls(exp_data)[-c(1:3)]; 
