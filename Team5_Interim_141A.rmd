@@ -106,6 +106,7 @@ library(grid)
 img <- readPNG("/Users/christinathai/Desktop/R_programming/STA_141A/Project/mouse_brain.png")
  grid.raster(img)
 ```
+The figure above is the reconstructed probe locations of recordings in Krebs. The poles are generated using the borders of the brain regions and map depth of the region in microns relative to position of the principal axes of the body plan (AP/DV/LR). 
 
 
 
