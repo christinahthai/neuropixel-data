@@ -43,7 +43,7 @@ This document is the interim report for STA 141A, Spring 2019. It seeks to exami
 
 To reduce the variability of cortical responses to sensory stimuli, analyzing the neural spikes in multiple brain regions during spontaneous activity will yield more accurate, less noisy, results. 
 
-Using the data gathered from ___'s experiment, we seek to analyze the areas of the brain that are used in conjunction, regardless of stimuli.
+Using the data gathered from _ 's experiment, we seek to analyze the areas of the brain that are used in conjunction, regardless of stimuli.
 
 
 
