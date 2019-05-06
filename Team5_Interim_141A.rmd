@@ -132,7 +132,7 @@ in the Journal of Neuroscience.
 We will use the STTC to produce a correlogram. Suppose we have two spike trains A and B. For a given value tau, we will cross
 correlate A and B by adding tau to the spike time of B. This will help us detect correlations when temporal delays occur. 
 
-
+Additionally, we will compute the pairwise STTC, and create a lattice plot to demonstrate the pairwise correlations as a function of distance. 
 
 
 ## Population and study design
