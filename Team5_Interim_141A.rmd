@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo=FALSE,message=FALSE,warning=FALSE)
 
 Team ID: 5
 
-Name (tasks): Oscar Alvarado (..)
+Name (tasks): Oscar Alvarado (Correlation Between Brain Regions)
 
 Name (tasks): Karishma Johnson (Spike Trains, Krebs' Visual)
 
@@ -124,6 +124,15 @@ Since our sample size (number of mice in experiment) is extremely small, n = 1, 
 
 
 Additionally, Kendall's Tau is ideal because it measures the extent to which, as one variable increases, the other variable tends to increase, without requiring the increase to be represented by a linear relationship.
+
+We will determine if there is correlation between brain regions by computing the Spike Time Tiling Coefficient (STTC), 
+which is a measure that computes the correlation between a pair of spike trains. STTC is a method that was proposed by Catherine S. Cutts and Stephen J. Eglen in the paper "Detecting Pairwise Correlations in Spike Trains: An Objective Comparison of Methods and Application to the Study of Retinal Waves"
+in the Journal of Neuroscience. 
+
+We will use the STTC to produce a correlogram. Suppose we have two spike trains A and B. For a given value tau, we will cross
+correlate A and B by adding tau to the spike time of B. This will help us detect correlations when temporal delays occur. 
+
+
 
 
 ## Population and study design
