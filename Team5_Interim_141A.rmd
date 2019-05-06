@@ -73,8 +73,6 @@ This report focuses on data collected from an experiment done with a mouse named
 
 This data set contains [spike trains](https://en.wikipedia.org/wiki/Neural_coding) of neurons in nine regions in the mouse brain.
 
-Each entry in the matrix represents the number of spikes for one neuron in the corresponding time window. 
-
 The following represent elements of behavior data
 `avgframe` Average Frame of Recording
 `faceSVD` Singular Value Decompositon of Compressed Image of Face
@@ -115,22 +113,17 @@ n_time= dim(exp_data$faceSVD)[2];
 n_sv = dim(exp_data$faceSVD)[1];
 ```
 
-
 ## Statistical questions of interest
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-<span style="color:red">Note: </span>  Translate the scientific goals into statistical questions that can be answered with appropriate statistical analysis on the given data.
-
-To answer the primary scientific question of interest of regulatory relationships between brain regions, we intend to
+To answer the primary scientific question of interest, we wish to assess the relationship between the different brain regions. 
 
 
 
 # Analysis Plan
+Since our sample size (number of mice in experiment) is extremely small, n = 1, we cpropose to use Kendall Tau Correlation method since it will outperform Pearson and Spearman's. 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-<span style="color:red">Note: </span>  It is best practice to write down the statistical analysis plan before analyzing data. This can significantly improve the rigorousity and reproducibility of the analysis, and avoid false discovery. This section should just be an extended version of your initial proposal. It is often inevitable that one may need to alter the analysis plan for unexpected features in the data. However, detailed documentation of the changes will shed light on unique features of the data set and help future analysis.
+Additionally, Kendall's Tau is ideal because it measures the extent to which, as one variable increases, the other variable tends to increase, without requiring the increase to be represented by a linear relationship.
 
 
 ## Population and study design
@@ -308,32 +301,19 @@ qable(table2[[3]],markup="markdown",rgroup=rgroups2)
 
 ## Inferential Analysis
 
-```{r, cache = TRUE, message=FALSE}
-library(lmtest)
-library(sandwich)
-
-nsclc_data.lm=lm(obstime~tx+europe+age+male+advdis+response+abnLDH+abnAlkphos+as.factor(ECOG),data=nsclc_data);
-
-nsclc_data.robust_lm=coeftest(nsclc_data.lm, vcov = vcovHC(nsclc_data.lm, type="HC1"))
-
-tmp=matrix(nsclc_data.robust_lm,nrow=dim(nsclc_data.robust_lm)[1],ncol=dim(nsclc_data.robust_lm)[2])
-dimnames(tmp)=dimnames(nsclc_data.robust_lm);
-
-caption_text = paste('Table 3: Results of multiple linear regression', sep='')
-knitr::kable(
- tmp,  caption = caption_text
-)
-```
-
 
 
 ## Sensitivity analysis
-
-
+ - the study of how the uncertainity in the output of a mathemadical model or system can be divided and allocated to different soures of uncertainity in its inputs
 
 
 
 # Future analysis plan 
+Since we have analyzed the correlation for each brain region. Another insightful feature to our report would be to create a prediction model to examine the strength of the relationship of spontaneous activity on neural activity. Additionally, incorporating more stimuli can give us a better understanding of how which stimuli triggers activity in specific regions of the brain.
+
+#References
+
+http://dev.biologists.org/content/133/11/2095
 
 
 
