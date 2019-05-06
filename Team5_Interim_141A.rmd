@@ -115,7 +115,7 @@ n_sv = dim(exp_data$faceSVD)[1];
 
 ## Statistical questions of interest
 
-To answer the primary scientific question of interest, we wish to assess the relationship between the different brain regions. 
+To answer the primary scientific question of interest, we wish to assess the pairwise relationships between different brain regions within one subject. 
 
 
 
@@ -129,6 +129,10 @@ Additionally, Kendall's Tau is ideal because it measures the extent to which, as
 ## Population and study design
 
 The initial study monitored large populations of neurons in awake head-fixed mice. These mice were unengaged from behavioral task and then their spontaneously performed behaviors (i.e. whisking, sniffing, and other facial movements) were monitored videographically. The study recorded simultaneous neurological data of six mice over nine sessions and worked to identify the relationship between these behaviors and their neural activity.  
+
+Further, the studies were testing in various settings such as with and without darkness and recordings in darkness or with a gray screen. They observed no differences between these recordings, thus we take it to imply that Krebs' sample data is representative of the mouse's overall behavior in this experiment[.](https://www.biorxiv.org/content/biorxiv/early/2018/04/22/306019.full.pdf) 
+
+In addition, we acknowledge that mouse models for genetic research prove to be excellent tools for insight into immune, endocrine, cardiovascular, skeletal, and in particular, nervous systems shared by mammals[.](https://www.genome.gov/10005834/background-on-mouse-as-a-model-organism) Thus conclusions obtained through the study may become applicable to humans.  
 
 
 ## Statistical Analysis
