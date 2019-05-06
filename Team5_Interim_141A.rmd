@@ -41,6 +41,11 @@ Name (tasks): Christina Thai
 This document is the interim report for STA 141A, Spring 2019. It seeks to examine whether their exists a regulatory relationship among regions. In other words, we will be investigating if activity in one region affects the activity in another region. 
 
 
+To reduce the variability of cortical responses to sensory stimuli, analyzing the neural spikes in multiple brain regions during spontaneous activity will yield more accurate, less noisy, results. 
+
+Using the data gathered from ___'s experiment, we seek to analyze the areas of the brain that are used in conjunction, regardless of stimuli.
+
+
 
 ## Background
 ```{r, message = FALSE, include=FALSE}
@@ -63,13 +68,10 @@ str(exp_data)
 In this project, we analyze the reduced data set `Reduced_Krebs.mat` containing Neuropixel recordings of a mouse named Krebs during spontaneous activity. The full data set can be found at this [webpage](https://janelia.figshare.com/articles/Eight-probe_Neuropixels_recordings_during_spontaneous_behaviors/7739750).
 The data used has already been preprocessed using a Matlab script, which can be found in the code Appendix of the report. 
 
-## Cortical Responses to Sensory Stimuli
-Cortical responses to sensory stimuli are highly variable, and sensory cortex exhibits intricate spontaneous activity even without external sensory input. Cortical variability and spontaneous activity have been variously proposed to represent random noise, recall of prior experience, or encoding of ongoing behavioral and cognitive variables. Here, by recording over 10,000 neurons in mouse visual cortex, we show that spontaneous activity reliably encodes a high-dimensional latent state, which is partially related to the ongoing behavior of the mouse and is represented not just in visual cortex but across the forebrain. Sensory inputs do not interrupt this ongoing signal, but add onto it a representation of visual stimuli in orthogonal dimensions. Thus, visual cortical population activity, despite its apparently noisy structure, reliably encodes an orthogonal fusion of sensory and multidimensional behavioral information.
-***
 
 #Summary of Data
-Within the reduced data we have, the columns 
 
+This report focuses on data collected from an experiment done with a mouse called Krebs. The neuron activation recorded from stimuli from running (measured by the motion of the air floating ball), whisking(measured by summed videographic motion energy within the whisker region), and the pupil area.
 
 This data set contains [spike trains](https://en.wikipedia.org/wiki/Neural_coding) of neurons in nine regions in the mouse brain.
 
@@ -77,10 +79,12 @@ This data set contains [spike trains](https://en.wikipedia.org/wiki/Neural_codin
 
 
 Each entry in the matrix represents the number of spikes for one neuron in the corresponding time window. 
+
+`avgframe`
 `faceSVD`
 `motionMask`
 
-The nine regions for Kreubs in the mouse brain are:
+The following columns represent the nine regions for Kreubs in the mouse brain:
 `stall.CP` Caudate Putamen
 `stall.FrMoCtx` Frontal Motor Cortex
 `stall.HPF` Hippocampal Formation
@@ -91,10 +95,10 @@ The nine regions for Kreubs in the mouse brain are:
 `stall.TH` Thalamus
 `stall.V1` Primary Visual Cortex
 
-The data set contains spike trains of neurons in nine regions of the mouse brain. Each corresponding column represents a specific region of the brain; for example, the Caudate Putamen
+The data set contains spike trains of neurons in nine regions of the mouse brain. Each corresponding column represents a specific region of the brain; for example, the vector `stall.CP` relates to the activity and activation of neurons located in the Caudate Putamen.
 
 
-
+## Visual of Brain Regions
 ```{r, fig.width=50, fig.height=50,echo=FALSE}
 #Image for the regions of the brain
 library(png)
@@ -102,6 +106,12 @@ library(grid)
 img <- readPNG("/Users/christinathai/Desktop/R_programming/STA_141A/Project/mouse_brain.png")
  grid.raster(img)
 ```
+
+
+
+
+
+
 
 ```{r}
 
