@@ -147,7 +147,7 @@ In addition, we acknowledge that mouse models for genetic research prove to be e
 
 ## Spike Trains 
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (KC - interpret)
+Spike trains are a mode of information transmission within the nervous system and serve as the basis of our study design[.](https://neuronaldynamics.epfl.ch/online/Ch7.S1.html) They are formed by a sequence of recorded times where neurons are firing action potentional. These firings are measured in terms of milliseconds and form a spike. Sequences of spikes are referred to as spike trains[.](http://www.stat.cmu.edu/~kass/papers/SpikeTrain.pdf) Neuron firing is induced by physical sensory stimuli. In the case of the original study, this is in correspondence with whisking, pupil area, and running. "Spike trains often last as long as the stimulus is present[.](http://www.neuwritewest.org/blog/2015/1/3/ask-a-neuroscientist-whats-a-spike-train)" Thus, when looking at the time indices 100 to 1000 there are notable blank spaces where spikes are not present. These could potentially be attributed to a lack of stimulus within the region, but we consider that since it is near the beginning of the data recording period, it may have been an issue in the recording of data itself over a lack of neurological activity.
 
 #### Time Frame Indices 100 to 1000
 ```{r echo = FALSE,eval = TRUE, message = FALSE}
