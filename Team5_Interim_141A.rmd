@@ -124,14 +124,20 @@ Since our sample size (number of mice in experiment) is extremely small, n = 1, 
 
 Additionally, Kendall's Tau is ideal because it measures the extent to which, as one variable increases, the other variable tends to increase, without requiring the increase to be represented by a linear relationship.
 
-We will determine if there is correlation between brain regions by computing the Spike Time Tiling Coefficient (STTC), 
-which is a measure that computes the correlation between a pair of spike trains. STTC is a method that was proposed by Catherine S. Cutts and Stephen J. Eglen in the paper "Detecting Pairwise Correlations in Spike Trains: An Objective Comparison of Methods and Application to the Study of Retinal Waves"
-in the Journal of Neuroscience. 
+Our goal in this project is to establish if there exists a regulatory relationship among the nine brain regions by
+analyzing the neural spike trains in the nine brain regions and determining if there is a correlation between them. We will do this 
+by computing the Spike Time Tiling Coefficient(STTC), which is a method that was proposed by Catherine S. Cutts and Stephen J. Eglen in the paper "Detecting Pairwise Correlations in Spike Trains: An Objective Comparison of Methods and Application to the Study of Retinal Waves" in the Journal of Neuroscience. STTC is defined as STTC = 0.5((P_A-T_B)/(1-P_A*T_B) + (P_B-T_A)/(1-P_B*T_A)) where 
+P_A = the proportion of spike from A which lie within +/- delta t of any spike from B, P_B = similar as P_A
+T_A = the proportion of total recording time which lies within +/- delta t of any spike from A, T_B = similar as T_B
+In their paper, Cutts and Eglen argue that STTC is superior to other coefficient measurements, particularly the 
+coefficient index, which is a factor by which the firing rate of neuron A increases over its mean value if measured within a fixed window of spikes from neuron B. Unlike the coefficient index, STTC is not bounded above nor is it cofounded by the firing rate. 
+In fact, STTC is bounded between values -1 and 1, -1 indicating strong anti-correlation, 0 no correlation, and 1 indicating identical spike trains. Also, the fact that STTC is not confounded by the firing rate indicates that it is a much fairer way of comparing correlations. As stated in Cutts and Watts paper,
+"Firing rates frequently vary across age, phenotype, and presence of pharmacological agonists and so this calls into question the results of many correlation analyses: some
+conclusions about differences in correlations may be due to the confounding effect of the firing rates, and not the correlations themselves." 
+In essence, we will take a spike train from one of the nine brain regions, and compute the STTC of it with the spike trains of the remaining 8 brain regions, and repeat this for all brain regions. We will achieve this by using the R package meaRtools, which has the algorithm for computing STTC.  
 
-We will use the STTC to produce a correlogram. Suppose we have two spike trains A and B. For a given value tau, we will cross
-correlate A and B by adding tau to the spike time of B. This will help us detect correlations when temporal delays occur. 
+In addition, we will use the STTC to produce a correlogram. Suppose we have two spike trains A and B, each being from a different brain region. For a given arbitrary value tau, we will cross correlate A and B by adding tau to the spike time of B. This will help detect correlations between the brain regions when temporal delays occur. Furthermore, we will create a lattice plot to demonstrate the brain regions pairwise correlations. By creating the lattice plot, we will be able to see clearly which regions have more correlation with one another.   
 
-Additionally, we will compute the pairwise STTC, and create a lattice plot to demonstrate the pairwise correlations as a function of distance. 
 
 
 ## Population and study design
