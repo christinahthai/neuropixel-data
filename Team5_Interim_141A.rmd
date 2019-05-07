@@ -27,7 +27,7 @@ Name (tasks): Oscar Alvarado (Correlation Between Brain Regions)
 
 Name (tasks): Karishma Johnson (Spike Trains, Krebs' Visual)
 
-Name (tasks): Christina Thai (Summary of data, Generated Mouse Brain .png, ..)
+Name (tasks): Christina Thai (Summary of data, Generated Mouse Brain .png, Future Analysis)
 
 
 ***
@@ -119,11 +119,6 @@ To answer the primary scientific question of interest, we wish to assess the pai
 
 
 # Analysis Plan
-Since our sample size (number of mice in experiment) is extremely small, n = 1, we cpropose to use Kendall Tau Correlation method since it will outperform Pearson and Spearman's. 
-
-
-Additionally, Kendall's Tau is ideal because it measures the extent to which, as one variable increases, the other variable tends to increase, without requiring the increase to be represented by a linear relationship.
-
 Our goal in this project is to establish if there exists a regulatory relationship among the nine brain regions by
 analyzing the neural spike trains in the nine brain regions and determining if there is a correlation between them. We will do this 
 by computing the Spike Time Tiling Coefficient(STTC), which is a method that was proposed by Catherine S. Cutts and Stephen J. Eglen in the paper "Detecting Pairwise Correlations in Spike Trains: An Objective Comparison of Methods and Application to the Study of Retinal Waves" in the Journal of Neuroscience. STTC is defined as STTC = 0.5((P_A-T_B)/(1-P_A*T_B) + (P_B-T_A)/(1-P_B*T_A)) where 
