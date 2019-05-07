@@ -214,9 +214,6 @@ for(i_region in 1:9) {
 
 
 
-## Sensitivity analysis
- - the study of how the uncertainity in the output of a mathemadical model or system can be divided and allocated to different soures of uncertainity in its inputs
-
 
 
 # Future analysis plan 
