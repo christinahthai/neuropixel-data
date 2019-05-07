@@ -35,14 +35,11 @@ Name (tasks): Christina Thai (Summary of data, Generated Mouse Brain .png, ..)
 
 
 # Introduction
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (maybe small expansion)
-
 This document is the interim report for STA 141A, Spring 2019. It seeks to examine whether their exists a regulatory relationship among regions. In other words, we will be investigating if activity in one region affects the activity in another region. 
 
 To reduce the variability of cortical responses to sensory stimuli, analyzing the neural spikes in multiple brain regions during spontaneous activity will yield more accurate, less noisy, results. 
 
-Using the data gathered from contributors Nick Steinmetz, Marius Pachitariu, Carsen Stringer, Matteo Carandini, and Kenneth Harris' experiment, we seek to analyze the areas of the brain that are used in conjunction, regardless of stimuli. The original experiment investigates fluctuations in arousal levels indicated by running, pupil area, and whisking. Our variable of interest is in the cortical responses as these behaviors are ongoing. 
+Using the data gathered from contributors Nick Steinmetz, Marius Pachitariu, Carsen Stringer, Matteo Carandini, and Kenneth Harris' experiment, we seek to analyze the areas of the brain that are used in conjunction, regardless of stimuli. The original experiment investigates fluctuations in arousal levels indicated by running, pupil area, and whisking. Our variable of interest is the cortical responses as these behaviors are ongoing. 
 
 
 
@@ -69,27 +66,29 @@ The data used has already been preprocessed using a Matlab script, which can be 
 
 
 #Summary of Data
-This report focuses on data collected from an experiment done with a mouse named Krebs. The neuron activation recorded from stimuli from running (measured by the motion of the air floating ball), whisking (measured by summed videographic motion energy within the whisker region), and the pupil area.
+This report focuses on data collected from an experiment done with a mouse named Krebs. The neuron activation recorded from stimuli from whisking (measured by summed videographic motion energy within the whisker region).
 
 This data set contains [spike trains](https://en.wikipedia.org/wiki/Neural_coding) of neurons in nine regions in the mouse brain.
 
-The following represent elements of behavior data
-`avgframe` Average Frame of Recording
-`faceSVD` Singular Value Decompositon of Compressed Image of Face
-`motionMask` Corresponding Masks to Singular Values
+The following represent elements of behavior data:
+`avgframe` Average Frame of Recording <br />
+`faceSVD` Singular Value Decompositon of Compressed Image of Face <br />
+`motionMask` Corresponding Masks to Singular Values <brv/>
 
 The data set being referenced `Reduced_Krebs.mat` contains the first 50 singular values and their masks. These are used to reproduce an image based on the average of the frames within the data set using infrared camera. 
 
-The following represent the nine regions for Krebs in the mouse brain:
-`stall.CP` Caudate Putamen
-`stall.FrMoCtx` Frontal Motor Cortex
-`stall.HPF` Hippocampal Formation
-`stall.LS` Lateral Septum
-`stall.MB` Midbrain
-`stall.SC` Superior Colliculus
-`stall.SomMoCtxx` Somatomotor Cortex
-`stall.TH` Thalamus
-`stall.V1` Primary Visual Cortex
+
+The following columns represent the nine regions for Kreubs in the mouse brain:
+
+`stall.CP` Caudate Putamen <br />
+`stall.FrMoCtx` Frontal Motor Cortex<br />
+`stall.HPF` Hippocampal Formation<br />
+`stall.LS` Lateral Septum<br />
+`stall.MB` Midbrain<br />
+`stall.SC` Superior Colliculus<br />
+`stall.SomMoCtxx` Somatomotor Cortex<br />
+`stall.TH` Thalamus<br />
+`stall.V1` Primary Visual Cortex <br />
 
 The data set contains spike trains of neurons in nine regions of the mouse brain. Each corresponding column represents a specific region of the brain; for example, the vector `stall.CP` relates to the activity and activation of neurons located in the Caudate Putamen.
 
@@ -102,7 +101,7 @@ library(grid)
 img <- readPNG("/Users/christinathai/Desktop/R_programming/STA_141A/Project/mouse_brain.png")
  grid.raster(img)
 ```
-The figure above is the reconstructed probe locations of recordings in Krebs. The poles are generated using the borders of the brain regions and map depth of the region in microns relative to position of the principal axes of the body plan (AP/DV/LR). 
+The figure above is the reconstructed probe locations of recordings in Krebs. The poles are generated using the borders of the brain regions and map depth of the region in microns relative to position of the principal axes of the body (AP/DV/LR). 
 
 **Note:** AP refers the antero-posterior, DV refers to the dorso-ventral, and LR refers to the left-right axis formation.
 
@@ -142,38 +141,6 @@ The initial study monitored large populations of neurons in awake head-fixed mic
 Further, the studies were testing in various settings such as with and without darkness and recordings in darkness or with a gray screen. They observed no differences between these recordings, thus we take it to imply that Krebs' sample data is representative of the mouse's overall behavior in this experiment[.](https://www.biorxiv.org/content/biorxiv/early/2018/04/22/306019.full.pdf) 
 
 In addition, we acknowledge that mouse models for genetic research prove to be excellent tools for insight into immune, endocrine, cardiovascular, skeletal, and in particular, nervous systems shared by mammals[.](https://www.genome.gov/10005834/background-on-mouse-as-a-model-organism) Thus conclusions obtained through the study may become applicable to humans.  
-
-
-## Statistical Analysis
-
-### Descriptive Analysis
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-<span style="color:red">Note: </span>  Describe the descriptive analysis you plan to conduct on the data set. The goal of the descriptive analysis is to provide an overview of the data set (and the study that collects the data) before diving into the analysis.
-
-We will summarize the distribution of each variables for patients in the treatment group and the control group. Based on the summary statistics, we will evaluate whether the randomization is successful. To be specific, all summary statistics of baseline variables should be similar between the treatment and control groups.
-
-We will estimate the survival function of patients in the treatment and control groups using Kaplan-Meier estimates, without adjusting for any covariates. Furthermore, we will summarize the distribution of observation time and the patients' status at the end of study in groups defined by treatment, regions of patients, indicator that patient had an abnormal LDH level, or indicator that patient had an abnormal alkaline phoshatase level.
-
-### "Main" Analysis
-
-
-<span style="color:red">Note: </span>  Describe the analysis you plan to conduct to answer the questions of interest. Remember to rename the section title to fit the actual analysis you propose, e.g., inferential analysis, clustering, prediction model, etc. For instance, in this report, this section should explain
-
-* Detailed model specification of linear regression model.
-* Description of the Cox proportional hazard model.
-* Description of the model with interactions.
-
-Furthermore, this section should also explain how you plan to interpret the conclusion---this is a convention for the analysis of clinical trials, which may not apply to other data science projects.
-
-
-
-### Sensitivity Analysis
-
-
-<span style="color:red">Note: </span>  Describe additional analysis you plan to conduct to complement the main analysis. This section should include analysis to show that the results you get are not sensitive to the model choices or assumptions. You can also conduct analysis to account for features in the data you have not foreseen.  
 
 
 # Results
@@ -243,76 +210,6 @@ for(i_region in 1:9) {
 
 }
 ```
-
-
-
-## Descriptive Analysis
-
-
-<span style="color:red">Note: </span> There are many ways to automatically generate summary tables in `R`, of which many would even generate html or latex tables. In this template, we will use the package `qwraps2` as an example ([link](https://cran.r-project.org/web/packages/qwraps2/vignettes/summary-statistics.html)).
-
-```{r }
-library(dplyr)
-library(tidyr)
-library(qwraps2)
-
-options(digits = 3)  
-
-set.seed(1) # Read more about RNGs with ?set.seed
-
-### Read data
-nsclc_data <- read.table("../Data/nsclc-modified.txt", header = TRUE)
-
-excluded_vars = c("ptid","tx");
-table1_summary <-  nsclc_data %>%   select(.,-one_of(excluded_vars)) %>%  qsummary(.)
-
-table1 =nsclc_data %>% group_by(.data$tx) %>%
-  summary_table(., table1_summary)
-
-rgroups =   rep(4,length(names(nsclc_data))-2)
-names(rgroups)=names(nsclc_data)[!names(nsclc_data)%in%excluded_vars]
-
-qable(table1,markup='markdown',rgroup=rgroups)
-```
-
-
-
-
-```{r}
-nsclc_data.trt= nsclc_data %>% filter(tx == 1);
-nsclc_data.ctrl= nsclc_data %>% filter(tx == 0);
-table2_summary.trt <- nsclc_data.trt %>%   select("obstime","survival.past.400") %>%  qsummary(.)
-table2_summary.ctrl <- nsclc_data.ctrl %>%   select("obstime","survival.past.400") %>%  qsummary(.)
-
-table2=list();
-table2.trt=list();
-table2.ctrl=list();
-bin_list = c("europe",             "abnLDH","abnAlkphos")
-for(i_var in 1:length(bin_list)){
-(table2.trt[[i_var]] =nsclc_data.trt %>% group_by(.data[[bin_list[i_var]]]) %>% summary_table(., table2_summary.trt))
-(table2.ctrl[[i_var]] =nsclc_data.ctrl %>% group_by(.data[[bin_list[i_var]]]) %>% summary_table(., table2_summary.ctrl))
-
-table2[[i_var]] = cbind(table2.trt[[i_var]],table2.ctrl[[i_var]]);
-}
-rgroups2 =   rep(4,2)
-names(rgroups2)=c("obstime","survival.past.400")
-```
-
-```{r}
-qable(table2[[1]],markup="markdown",rgroup=rgroups2)
-```
-
-
-```{r}
-qable(table2[[2]],markup="markdown",rgroup=rgroups2)
-```
-
-
-```{r}
-qable(table2[[3]],markup="markdown",rgroup=rgroups2)
-```
-
-## Inferential Analysis
 
 
 
