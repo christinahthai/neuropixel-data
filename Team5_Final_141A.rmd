@@ -32,7 +32,7 @@ Auditor (tasks):
 ***
 
 ## Introduction
-This document is the interim report for STA 141A, Spring 2019. It seeks to examine whether their exists a regulatory relationship among regions. In other words, we will be investigating if activity in one region affects the activity in another region. 
+This document is the final report for the Spring 2019 course STA 141A at University of California, Davis. It seeks to examine whether activity in one region affects the activity in another region. 
 
 To reduce the variability of cortical responses to sensory stimuli, analyzing the neural spikes in multiple brain regions during spontaneous activity will yield more accurate, less noisy, results. 
 
@@ -84,6 +84,8 @@ The following columns represent the nine regions for Kreubs in the mouse brain:
 `stall.V1` Primary Visual Cortex <br />
 
 The data set contains spike trains of neurons in nine regions of the mouse brain. Each corresponding column represents a specific region of the brain; for example, the vector `stall.CP` relates to the activity and activation of neurons located in the Caudate Putamen.
+
+A more in depth explanation on the structure of our data is that it is a binary matrix with values of 1 denoting an existance of neural activity and 0 being that there is no neural activity at the specific time frame. Each row represents a neuron within the region. 
 
 
 ## Visual of Brain Regions
@@ -182,19 +184,21 @@ for(i_region in 1:9) {
 
 ##Correlation Analysis
 ```{r, echo = FALSE, warning = FALSE}
-library(graphics)
-for (i in 1:9) {
+library(dygraphs)
 
+avg_neuron_list <- vector('list',9)
+# par(mfrow = c(4,1))
+for (i in 1:9) {
 #Calculating the column sums 
 spiketrain = exp_data[[brain_regions[i]]];
 n_time = dim(spiketrain)[2]
-n_neurons = dim(spiketrain)[i]; 
-
+n_neurons = dim(spiketrain)[1]
 #Calculating the average number of neurons for each time frame
 neurons_fired = colSums(spiketrain)
-avg.neurons =as.vector(neurons_fired/length(spiketrain))
+neurons.avg <- as.vector(neurons_fired/n_neurons)
 
-smoothScatter(1:n_time, neurons_fired)
+avg_neuron_list[[i]] <-neurons.avg[20000:30000]
+plot(as.ts(neurons.avg), xlab = "Time Frame", ylab = "Average number of neurons Fired")
 }
 ```
 Our goal in this project is to establish if there exists a regulatory relationship among the nine brain regions by
