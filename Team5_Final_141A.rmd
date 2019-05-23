@@ -182,21 +182,51 @@ for(i_region in 1:9) {
 
 ##Correlation Analysis
 ```{r, echo = FALSE, warning = FALSE}
-library(graphics)
+library(dygraphs)
+library(xts)
+avg_neuron_list <- vector('list',9)
+# par(mfrow = c(4,1))
 for (i in 1:9) {
-
 #Calculating the column sums 
 spiketrain = exp_data[[brain_regions[i]]];
 n_time = dim(spiketrain)[2]
-n_neurons = dim(spiketrain)[i]; 
-
+n_neurons = dim(spiketrain)[1]
 #Calculating the average number of neurons for each time frame
 neurons_fired = colSums(spiketrain)
-avg.neurons =as.vector(neurons_fired/length(spiketrain))
-
-smoothScatter(1:n_time, neurons_fired)
+neurons.avg <- as.vector(neurons_fired/n_neurons)
+avg_neuron_list[[i]] <-neurons.avg
+# plot(as.ts(neurons.avg), xlab = "Time Frame", ylab = "Average number of neurons Fired")
 }
 ```
+
+
+## Overlap of Average Spike Trains for Each Region
+Recall that the brain regions are:
+`stall.CP` Caudate Putamen <br />
+`stall.FrMoCtx` Frontal Motor Cortex<br />
+`stall.HPF` Hippocampal Formation<br />
+`stall.LS` Lateral Septum<br />
+`stall.MB` Midbrain<br />
+`stall.SC` Superior Colliculus<br />
+`stall.SomMoCtxx` Somatomotor Cortex<br />
+`stall.TH` Thalamus<br />
+`stall.V1` Primary Visual Cortex <br />
+```{r}
+spike_data_frame = data.frame(time = (1:n_time), Caudate_Putamen = avg_neuron_list[[1]], FrMoCtx = avg_neuron_list[[2]], HPF = avg_neuron_list[[3]], LS = avg_neuron_list[[4]], MB = avg_neuron_list[[5]], SC = avg_neuron_list[[6]], SoMoCtxx = avg_neuron_list[[7]], TH = avg_neuron_list[[7]], TH = avg_neuron_list[[8]], V1 =  avg_neuron_list[[9]])
+dygraph(spike_data_frame) %>%
+  dyOptions(labelsUTC = TRUE, fillGraph=TRUE, fillAlpha=0.1, drawGrid = FALSE, colors=c("#a987b7", "#59bad8", "#D8AE5A","#9b2b2b", "#8fb787", "#096010", "#0c62b7", "#f4b7f1", "#ff0008")) %>%
+  dyRangeSelector() %>%
+  dyCrosshair(direction = "vertical") %>%
+  dyHighlight(highlightCircleSize = 8, highlightSeriesBackgroundAlpha = 0.2, hideOnMouseOut = FALSE)  %>%
+  dyRoller(rollPeriod = 300)
+```
+
+
+
+
+
+
+
 Our goal in this project is to establish if there exists a regulatory relationship among the nine brain regions by
 analyzing the neural spike trains in the nine brain regions and determining if there is a correlation between them. We will do this 
 by computing the Spike Time Tiling Coefficient(STTC), which is a method that was proposed by Catherine S. Cutts and Stephen J. Eglen in the paper "Detecting Pairwise Correlations in Spike Trains: An Objective Comparison of Methods and Application to the Study of Retinal Waves" in the Journal of Neuroscience. STTC is defined as STTC = 0.5((P_A-T_B)/(1-P_A*T_B) + (P_B-T_A)/(1-P_B*T_A)) where 
