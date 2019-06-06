@@ -25,7 +25,8 @@ Name (tasks): Oscar Alvardo
 
 Name (tasks): Karshima Johnson
 
-Name (tasks): Christina Thai
+Name (tasks): Christina Thai (Introduction, Background, Summary of Data, Visual of Probe Locations in Brain, Time Series Visual of Average Number of Neurons/Region, Kendall Tau's correlation)
+
 
 Auditor (tasks):
 
@@ -109,7 +110,9 @@ n_sv = dim(exp_data$faceSVD)[1];
 
 ## Statistical questions of interest
 
-To answer the primary scientific question of interest, we wish to assess the pairwise relationships between different brain regions within one subject. 
+We wish to examine which brain regions are being are activated(?) relatively simultaneously. In other words, we seek to examine if brain activity in the Thalamus can also imply activity in the Primary Visual Cortex.
+
+Additionally, we want to examine neural activity throughout the entire time period and locate where there may be significant changes in neural activity.
 
 
 # Analysis Plan
@@ -122,7 +125,20 @@ Further, the studies were testing in various settings such as with and without d
 
 In addition, we acknowledge that mouse models for genetic research prove to be excellent tools for insight into immune, endocrine, cardiovascular, skeletal, and in particular, nervous systems shared by mammals[.](https://www.genome.gov/10005834/background-on-mouse-as-a-model-organism) Thus conclusions obtained through the study may become applicable to humans.  
 
+##Kendall Tau's Correlation
+We choose to examine the pairwise correlations with Kendall's method with ranks since this method does not need any assumptions on the distribution. This non-parametric correlation method measures the number of discordant and concordant pairs.
+Assume there are pairs $(X_i, Y_i)$ and $(X_j,Y_j)$ where $i < j$. If $X_i < X_j$ and $Y_i < Y_j$, then $(X_i - X_j) \times (Y_i - Y_j) > 0$ and $(X_i, Y_i)$ and $(X_j,Y_j)$. Thus $(X_i, Y_i)$  $(X_j,Y_j)$ is a concordant pair and an increase in X implies an increase in Y.
+Similar logic is applied to the definition of discordant pairs, which can be seen in the mathematical definition: $(X_i - X_j) \times (Y_i - Y_j) < 0$. Tied pairs mean $(X_i - X_j) \times (Y_i - Y_j)  = 0$
+Kendall's $\tau = \frac{C - D}{n(n-1)/2)}$, where C is the number of concordant pairs and D represents discordant pairs.
+If most pairs are concordant, then there is a postive linear relationship. Similarly, if most pairs are discordinant, then the data suggests a negative linear relationship. If there are an equal number of discordant and concordant pairs, this suggests no linear relationship, i.g. X and Y are independent. 
 
+
+
+#Results
+
+##Descriptive Anaysis
+
+-- Karishma will add (summary of data) !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 ```{r}
@@ -151,42 +167,39 @@ for (i in 1:9) {
   spikes = getspike(i,0,n_time)
 }
 ```
+##Reduced SVD Face
+```{r eval=FALSE, include=FALSE}
 
-#### Spike Trains for Time Frame Indices 1000 to 2000
+time_list = c(10800:25000) # ADJUST IF YOU'RE NOT CONFIDENT IT WORKS YET # 39053 IS A LOT OF FRAMES TO MAKE 
+# I.E. IT TAKES TIME
+dims=dim(exp_data$motionMask);
 
-```{r echo = FALSE, eval = TRUE, message = FALSE}
-plot_list = list()
-for(i_region in 1:9) {
-      time_range = c(1000, 2000); # indices of time frame
-      
-      ### Extract the spike train for this region
-      spikes_this_region = exp_data[[brain_regions[i_region]]]
-      
-      ### Visualize the spike train 
-      n_neurons = dim(spikes_this_region)[1]; 
-      p = plot(x=0,y=0,pch=16,col="white",type="l",lwd=3,ylim=c(0,n_neurons),
-               xlim=time_range,cex.lab=1,cex.main=1,ylab='Neuron',xlab='Time frame',
-               main=paste0("Spike Train Region ", i_region, " Time ", time_range[1], 
-                " to ", time_range[2]))
-               #yaxt='n',xaxt='n',
-      
-      for(i_neuron in 1:n_neurons){
-        spk_times =which(spikes_this_region[i_neuron,time_range[1]:time_range[2]]>0);
-        if (length(spk_times)>0){
-          points(y=rep(i_neuron,length(spk_times)),x=spk_times+time_range[1]-1,col="#000000",pch='.',cex=2)
-        }
-      }
-      
-      plot_list[[i_region]] = p
+jpeg("/tmp/foo%02d.jpg")
+my.plot <- list() #create empty list to store all the images
+for (it in 1:length(time_list)){
+  face_i = matrix(0,nrow=dims[1],ncol=dims[2]);
+  i=time_list[it];
+  
+  for (i_sv in 1:n_sv){
+    tmp=exp_data$motionMask[,,i_sv];
+    tmp[is.nan(tmp)]=0;
+    face_i=face_i+exp_data$faceSVD[i_sv,i]*tmp;
+    
+  }
+  face_i= apply(face_i, 2, rev) #flips image (haha rev =reverse gottem)
+  image <- image( t(face_i),col=heat.colors(20),zlim=c(-10,10)) #plots it
+  my.plot[[it]] <- image
+  
 }
+dev.off()
+
 ```
 
-
-##Correlation Analysis
+##Average Number of Neurons
 ```{r, echo = FALSE, warning = FALSE}
-library(dygraphs)
-
 avg_neuron_list <- vector('list',9)
+var_neurons_list <- vector('list', 9)
+
 # par(mfrow = c(4,1))
 for (i in 1:9) {
 #Calculating the column sums 
@@ -196,11 +209,14 @@ n_neurons = dim(spiketrain)[1]
 #Calculating the average number of neurons for each time frame
 neurons_fired = colSums(spiketrain)
 neurons.avg <- as.vector(neurons_fired/n_neurons)
+neurons.var <- var(neurons.avg)
+var_neurons_list[[i]] <- neurons.var
 avg_neuron_list[[i]] <-neurons.avg
 # plot(as.ts(neurons.avg), xlab = "Time Frame", ylab = "Average number of neurons Fired")
 }
 ```
-## Overlap of Average Spike Trains for Each Region
+
+
 Recall that the brain regions are:
 `stall.CP` Caudate Putamen <br />
 `stall.FrMoCtx` Frontal Motor Cortex<br />
@@ -212,6 +228,7 @@ Recall that the brain regions are:
 `stall.TH` Thalamus<br />
 `stall.V1` Primary Visual Cortex <br />
 ```{r}
+library(dygraphs)
 spike_data_frame = data.frame(time = (1:n_time), CP = avg_neuron_list[[1]], FrMoCtx = avg_neuron_list[[2]], HPF = avg_neuron_list[[3]], LS = avg_neuron_list[[4]], MB = avg_neuron_list[[5]], SC = avg_neuron_list[[6]], SoMoCtxx = avg_neuron_list[[7]], TH = avg_neuron_list[[8]], V1 =  avg_neuron_list[[9]])
 dygraph(spike_data_frame) %>%
   dyOptions(labelsUTC = TRUE, fillGraph=TRUE, fillAlpha=0.1, drawGrid = FALSE, colors=c("#a987b7", "#59bad8", "#D8AE5A","#9b2b2b", "#8fb787", "#096010", "#0c62b7", "#f4b7f1", "#ff0008")) %>%
@@ -223,47 +240,52 @@ dygraph(spike_data_frame) %>%
 
 
 
-From the above plot, we can see that the time from of most activity is between 20000 and 30000ms. Thus, we adjust our interval accordingly to analyze correlation.
+From the above plot, we can see that the time from of most activity is between 20000 and 29000ms. Thus, we adjust our interval accordingly to analyze correlation.
 
 We choose to examine correlation using the Kendall method. 
 
+
+##Correlation Analysis
+We choose to examine correlation using the Kendall method because it does not require the assumption of a linear relationship. 
+Another reason why we chose to use Kendall Tau's method for correlation because the ranking of data points mitigates the effects of outliers. 
 ```{r}
 library(ggcorrplot)
+library(corrplot)
 
 #Time frame of interest
-time_frame <- c(20000:25000)
-
+time_frame <- c(20000:29000)
 
 for (i in 1:9) {
   spikes[[i]] <- avg_neuron_list[[i]][time_frame]
 }
 
 spikes.cor.data = data.frame(CP = spikes[[1]], FrMoCtx = spikes[[2]], HPF = spikes[[3]], LS = spikes[[4]], MB = spikes[[5]], SC = spikes[[6]], SoMoCtxx = spikes[[7]], TH = spikes[[8]], V1 =  spikes[[9]])
-spikes.cor <- cor(spikes.cor.data, method = "kendall")
 
-ggcorrplot(spikes.cor)
+#Computing Kendall's correlation matrix
+spikes.cor.kendall <- cor(spikes.cor.data, method = "kendall")
 
+#Computing Pearson's correlation
+spikes.cor.pearson <- cor(spikes.cor.data)
+
+```
+
+
+
+```{r}
+#Plot Pearson Correlation Matrix
+corrplot(spikes.cor.pearson, method = "number", type = "lower")
 ```
 
 
 ```{r}
-library(corrplot)
-corrplot(spikes.cor, method="number", type = "upper")
+#Plot Kendall Tau Correlation Matrix
+corrplot(spikes.cor.kendall, method="number", type = "lower")
 ```
-
-
-
-#Results
+Kendall's correlation is much smaller value, which we believe is due to removing 
 
 
 # Discussion
-
-
-
-
-#References
-
-http://dev.biologists.org/content/133/11/2095
+Note: Discuss the limitations of the presented projects, and comment on how this project enlightens future research or analysis.
 
 
 
