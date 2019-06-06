@@ -245,6 +245,50 @@ From the above plot, we can see that the time from of most activity is between 2
 We choose to examine correlation using the Kendall method. 
 
 
+##Reducing Variability in Each Region
+Since plotting each proportion of neurons firing at each millisecond is extremely volatile, we proposed to analyze the average proportion of neurons firing at a new interval 1 through 1302 where each "time" is considered a time window of 30ms. 
+```{r}
+#Initialize lists for average and variance of spikes
+avg.spikes <- vector('list', 9)
+var.spikes <- vector('list', 9)
+
+#definition of calculating the variance of each column
+ColVar <- function(x, ...) {
+  colSums((x - rowMeans(x, ...))^2, ...)/(dim(x)[2] - 1)
+}
+
+
+for (i in 1:9) {
+  avg.spikes[[i]] <- colMeans(matrix(spike_data_frame[[i+1]],30))
+  var.spikes[[i]] <- ColVar(matrix(spike_data_frame[[i+1]],30))
+}
+
+avg.spikes.data = data.frame(time = (1:length(avg.spikes[[1]])), CP = avg.spikes[[1]], FrMoCtx = avg.spikes[[2]], HPF = avg.spikes[[3]], LS = avg.spikes[[4]], MB = avg.spikes[[5]], SC = avg.spikes[[6]], SoMoCtxx = avg.spikes[[7]], TH = avg.spikes[[8]], V1 =  avg.spikes[[9]])
+
+dygraph(avg.spikes.data) %>%
+  dyOptions(labelsUTC = TRUE, fillGraph=TRUE, fillAlpha=0.1, drawGrid = FALSE, colors=c("#a987b7", "#59bad8", "#D8AE5A","#9b2b2b", "#8fb787", "#096010", "#0c62b7", "#f4b7f1", "#ff0008")) %>%
+  dyRangeSelector() %>%
+  dyCrosshair(direction = "vertical") %>%
+  dyHighlight(highlightCircleSize = 8, highlightSeriesBackgroundAlpha = 0.2, hideOnMouseOut = FALSE)  %>%
+  dyRoller(rollPeriod = 300)
+
+```
+
+
+```{r}
+var.spikes.data = data.frame(time = (1:length(var.spikes[[1]])), CP = var.spikes[[1]], FrMoCtx = var.spikes[[2]], HPF = var.spikes[[3]], LS =var.spikes[[4]], MB = var.spikes[[5]], SC = var.spikes[[6]], SoMoCtxx = var.spikes[[7]], TH = var.spikes[[8]], V1 =  var.spikes[[9]])
+
+dygraph(var.spikes.data) %>%
+  dyOptions(labelsUTC = TRUE, fillGraph=TRUE, fillAlpha=0.1, drawGrid = FALSE, colors=c("#a987b7", "#59bad8", "#D8AE5A","#9b2b2b", "#8fb787", "#096010", "#0c62b7", "#f4b7f1", "#ff0008")) %>%
+  dyRangeSelector() %>%
+  dyCrosshair(direction = "vertical") %>%
+  dyHighlight(highlightCircleSize = 8, highlightSeriesBackgroundAlpha = 0.2, hideOnMouseOut = FALSE)  %>%
+  dyRoller(rollPeriod = 300)
+```
+The above plot shows the variance of each 30ms time window for each brain region.
+
+
+
 ##Correlation Analysis
 We choose to examine correlation using the Kendall method because it does not require the assumption of a linear relationship. 
 Another reason why we chose to use Kendall Tau's method for correlation because the ranking of data points mitigates the effects of outliers. 
@@ -269,15 +313,16 @@ spikes.cor.pearson <- cor(spikes.cor.data)
 
 ```
 
-
-
+##Pearson's Correlation
 ```{r}
 #Plot Pearson Correlation Matrix
 corrplot(spikes.cor.pearson, method = "number", type = "lower")
 ```
 
 
+#Kendall's Correlation Matrix
 ```{r}
+
 #Plot Kendall Tau Correlation Matrix
 corrplot(spikes.cor.kendall, method="number", type = "lower")
 ```
@@ -285,8 +330,8 @@ Kendall's correlation is much smaller value, which we believe is due to removing
 
 
 # Discussion
-Note: Discuss the limitations of the presented projects, and comment on how this project enlightens future research or analysis.
 
+Note: Discuss the limitations of the presented projects, and comment on how this project enlightens future research or analysis.
 
 
 # Session information
