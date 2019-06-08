@@ -30,7 +30,7 @@ Name (tasks): Christina Thai (Introduction, Background, Summary of Data, Visual 
 
 ***
 
-## Introduction
+# Introduction
 
 This document is the final report for the Spring 2019 course STA 141A at University of California, Davis. It seeks to examine whether activity in one region affects the activity in another region. 
 
@@ -53,15 +53,13 @@ exp_data<- readMat(paste(ephysroot,mstr,'_reduced.mat',sep=''));
 str(exp_data)
 ```
 ```{r, message = FALSE, include=FALSE}
-library(png)
-library(grid)
 library(ggcorrplot)
 library(corrplot)
 library(knitr)
 library(matrixStats)
 library(qlcMatrix)
-library(png)
-library(grid)
+library(dplyr)
+library(dygraphs)
 ```
 
 In this project, we analyze the reduced data set `Reduced_Krebs.mat` containing Neuropixel recordings of a mouse named Krebs during spontaneous activity. The full data set can be found at this [webpage](https://janelia.figshare.com/articles/Eight-probe_Neuropixels_recordings_during_spontaneous_behaviors/7739750).
@@ -294,39 +292,11 @@ In contrast, we observe that the Caudate Putamen yields the smallest maximum, av
 
 
 
-##Reduced SVD Face
-```{r eval=FALSE, include=FALSE}
 
-time_list = c(10800:25000) # ADJUST IF YOU'RE NOT CONFIDENT IT WORKS YET # 39053 IS A LOT OF FRAMES TO MAKE 
-# I.E. IT TAKES TIME
-dims=dim(exp_data$motionMask);
-
-jpeg("/tmp/foo%02d.jpg")
-my.plot <- list() #create empty list to store all the images
-for (it in 1:length(time_list)){
-  face_i = matrix(0,nrow=dims[1],ncol=dims[2]);
-  i=time_list[it];
-  
-  for (i_sv in 1:n_sv){
-    tmp=exp_data$motionMask[,,i_sv];
-    tmp[is.nan(tmp)]=0;
-    face_i=face_i+exp_data$faceSVD[i_sv,i]*tmp;
-    
-  }
-  face_i= apply(face_i, 2, rev) #flips image (haha rev =reverse gottem)
-  image <- image( t(face_i),col=heat.colors(20),zlim=c(-10,10)) #plots it
-  my.plot[[it]] <- image
-  
-}
-dev.off()
-
-```
-
-##Average Number of Neurons
+##Interactive Plots of Brain Region Activity
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 avg_neuron_list <- vector('list',9)
 var_neurons_list <- vector('list', 9)
-
 # par(mfrow = c(4,1))
 for (i in 1:9) {
 #Calculating the column sums 
@@ -339,7 +309,7 @@ neurons.avg <- as.vector(neurons_fired/n_neurons)
 neurons.var <- var(neurons.avg)
 var_neurons_list[[i]] <- neurons.var
 avg_neuron_list[[i]] <-neurons.avg
-# plot(as.ts(neurons.avg), xlab = "Time Frame", ylab = "Average number of neurons Fired")
+
 }
 ```
 
@@ -354,9 +324,15 @@ Recall that the brain regions are:
 `stall.SomMoCtxx` Somatomotor Cortex<br />
 `stall.TH` Thalamus<br />
 `stall.V1` Primary Visual Cortex <br />
+
+The following interactive plot merges and overlaps the plots of the spike trains of each brain region overlapping across the entire recording period. 
 ```{r}
-library(dygraphs)
+#Original spike train data
+
 spike_data_frame = data.frame(time = (1:n_time), CP = avg_neuron_list[[1]], FrMoCtx = avg_neuron_list[[2]], HPF = avg_neuron_list[[3]], LS = avg_neuron_list[[4]], MB = avg_neuron_list[[5]], SC = avg_neuron_list[[6]], SoMoCtxx = avg_neuron_list[[7]], TH = avg_neuron_list[[8]], V1 =  avg_neuron_list[[9]])
+
+
+# plot of entire frame 
 dygraph(spike_data_frame) %>%
   dyOptions(labelsUTC = TRUE, fillGraph=TRUE, fillAlpha=0.1, drawGrid = FALSE, colors=c("#a987b7", "#59bad8", "#D8AE5A","#9b2b2b", "#8fb787", "#096010", "#0c62b7", "#f4b7f1", "#ff0008")) %>%
   dyRangeSelector() %>%
@@ -364,13 +340,10 @@ dygraph(spike_data_frame) %>%
   dyHighlight(highlightCircleSize = 8, highlightSeriesBackgroundAlpha = 0.2, hideOnMouseOut = FALSE)  %>%
   dyRoller(rollPeriod = 300)
 ```
-
-
-
-From the above plot, we can see that the time from of most activity is between 20000 and 29000 time frame indices. Thus, we adjust our interval accordingly to analyze correlation.
-
-We choose to examine correlation using the Kendall method. 
-
+Viewing them as overlapping spikes allows us to see which regions, if any, with similar "spikes" or pattern. We can analyze the spikes using with: <br />
+1.  Proportion of neurons in the area have a similar density of neurons firing.
+<br />
+2. Time periods with is a similar spike trend/pattern in the proportion of neurons firing. <br />
 
 ## Reducing Variability in Each Region
 
@@ -379,19 +352,17 @@ Since plotting each proportion of neurons firing at each millisecond is extremel
 #Initialize lists for average and variance of spikes
 avg.spikes <- vector('list', 9)
 var.spikes <- vector('list', 9)
-
 #definition of calculating the variance of each column
 ColVar <- function(x, ...) {
   colSums((x - rowMeans(x, ...))^2, ...)/(dim(x)[2] - 1)
 }
-
-
 for (i in 1:9) {
   avg.spikes[[i]] <- colMeans(matrix(spike_data_frame[[i+1]],30))
   var.spikes[[i]] <- ColVar(matrix(spike_data_frame[[i+1]],30))
 }
-
 avg.spikes.data = data.frame(time = (1:length(avg.spikes[[1]])), CP = avg.spikes[[1]], FrMoCtx = avg.spikes[[2]], HPF = avg.spikes[[3]], LS = avg.spikes[[4]], MB = avg.spikes[[5]], SC = avg.spikes[[6]], SoMoCtxx = avg.spikes[[7]], TH = avg.spikes[[8]], V1 =  avg.spikes[[9]])
+
+##Plot of compressed time frames 
 
 dygraph(avg.spikes.data) %>%
   dyOptions(labelsUTC = TRUE, fillGraph=TRUE, fillAlpha=0.1, drawGrid = FALSE, colors=c("#a987b7", "#59bad8", "#D8AE5A","#9b2b2b", "#8fb787", "#096010", "#0c62b7", "#f4b7f1", "#ff0008")) %>%
@@ -399,13 +370,14 @@ dygraph(avg.spikes.data) %>%
   dyCrosshair(direction = "vertical") %>%
   dyHighlight(highlightCircleSize = 8, highlightSeriesBackgroundAlpha = 0.2, hideOnMouseOut = FALSE)  %>%
   dyRoller(rollPeriod = 300)
-
 ```
-
+As expected, we found that the basic trends of the previous (and volatile) plot remains the same. Thus, we can identify any time periods where there are any significant changes in brain activity (stationary or otherwise). See section *Patterns of Brain Region Activity over Entire Time Period* for more details.
 
 ```{r}
-var.spikes.data = data.frame(time = (1:length(var.spikes[[1]])), CP = var.spikes[[1]], FrMoCtx = var.spikes[[2]], HPF = var.spikes[[3]], LS =var.spikes[[4]], MB = var.spikes[[5]], SC = var.spikes[[6]], SoMoCtxx = var.spikes[[7]], TH = var.spikes[[8]], V1 =  var.spikes[[9]])
+#Data frame for variance of spikes post compression
+var.spikes.data = data.frame(time = (1:length(var.spikes[[1]])), CP = var.spikes[[1]], FrMoCtx = var.spikes[[2]], HPF = var.spikes[[3]], LS =var.spikes[[4]], MB = var.spikes[[5]], SC = var.spikes[[6]], SoMoCtyxx = var.spikes[[7]], TH = var.spikes[[8]], V1 =  var.spikes[[9]])
 
+#plot of variance after compression
 dygraph(var.spikes.data) %>%
   dyOptions(labelsUTC = TRUE, fillGraph=TRUE, fillAlpha=0.1, drawGrid = FALSE, colors=c("#a987b7", "#59bad8", "#D8AE5A","#9b2b2b", "#8fb787", "#096010", "#0c62b7", "#f4b7f1", "#ff0008")) %>%
   dyRangeSelector() %>%
@@ -413,58 +385,72 @@ dygraph(var.spikes.data) %>%
   dyHighlight(highlightCircleSize = 8, highlightSeriesBackgroundAlpha = 0.2, hideOnMouseOut = FALSE)  %>%
   dyRoller(rollPeriod = 300)
 ```
-The above plot shows the variance of each 30ms time window for each brain region.
+The above plot shows the variance of each 30ms time window for each brain region. Although there seems to be slight 
+
+###Patterns of Brain Region Activity over Entire Time Period
+Below is a table of the time periods where the spike train pattern appears to be relatively stationary along with any time periods where there seems to be a significant change in brain region activity. Note that the unit of measurememt is the original time frame unit (before compression). <br />
+Stationary | Spike
+------------- | -------------
+1 - 10,000 | 10,001 - 12,000
+12,001 - 19,500 | 20,000 - 29,000
+end |  xxx
 
 
 
 ## Correlation Analysis
-
-We choose to examine correlation using the Kendall method because it does not require the assumption of a linear relationship. 
-Another reason why we chose to use Kendall Tau's method for correlation because the ranking of data points mitigates the effects of outliers. 
+To assess for correlation, we use the compressed data with the new unit of time as 1 - 1302 since the volality of the original data set with the time frame was very sensitive and overall noisy.
 ```{r}
-library(ggcorrplot)
-library(corrplot)
-
 #Time frame of interest
-time_frame <- c(20000:29000)
+time_frame <- c(1:length(avg.spikes[[1]]))
 
+spikes <- vector('list',9)
 for (i in 1:9) {
-  spikes[[i]] <- avg_neuron_list[[i]][time_frame]
+  spikes[[i]] <- avg.spikes.data[[i]][time_frame]
 }
 
 spikes.cor.data = data.frame(CP = spikes[[1]], FrMoCtx = spikes[[2]], HPF = spikes[[3]], LS = spikes[[4]], MB = spikes[[5]], SC = spikes[[6]], SoMoCtxx = spikes[[7]], TH = spikes[[8]], V1 =  spikes[[9]])
+```
 
+
+```{r}
 #Computing Kendall's correlation matrix
 spikes.cor.kendall <- cor(spikes.cor.data, method = "kendall")
-
 #Computing Pearson's correlation
 spikes.cor.pearson <- cor(spikes.cor.data)
-
 ```
 
 ## Pearson's Correlation
-
+Initially, we chose Pearson's correlation to analyze the relationships between brain regions. 
 ```{r}
 #Plot Pearson Correlation Matrix
 corrplot(spikes.cor.pearson, method = "number", type = "lower")
 ```
-
+<br />
+Here, Pearson's correlation is relatively high, which may be due to the fact that the distribution is skewed from the spike around the 20,000 - 30,000 time frame. 
 
 ## Kendall's Correlation Matrix
+We choose to examine correlation using the Kendall method because it does not require the assumption of a linear relationship, which may skew our values of correlation. 
+Another reason why we chose to use Kendall Tau's method for correlation because the ranking of data points mitigates the effects of outliers (the significant pattern difference). 
 
 ```{r}
 #Plot Kendall Tau Correlation Matrix
 corrplot(spikes.cor.kendall, method="number", type = "lower")
 ```
-Kendall's correlation is much smaller value, which we believe is due to removing 
+Kendall's correlation is much smaller value, which we believe is due to the mitigation of outliers, hence a more accurate correlation coefficient. 
+
+It is important to note that the most highly correlated brain regions are the Somamotor Cortex and the Midbrain. This relationship is seen both in Pearson's and Kendall's correlation methods. Additionally, Kendall's method helps mute the potential skews in other brain regions, e.g. Somatomotor Cortex (SoMoCt) and the Superior Colliculus (SC). These correlated relationships imply that brain activity in these regions have a somewhat working relationship and their neural functions may overlap. These results can be supported and/or supplemented with the neurobiology. 
 
 
 # Discussion
+This project shed light on how to better visualize spike trains. Although our analysis was relatively elementary, visualizing spike trains is the first step to supplement more comprehensive studies. We hope this visual tool can be replicated on other neural pixel datasets as well. 
 
-Note: Discuss the limitations of the presented projects, and comment on how this project enlightens future research or analysis.
+Since the computational power required to analyze the whole data set from the original experiement is massive, we perhaps found ourselves at a disadvantage. 
+
+
 
 
 # Session information
 ```{r}
 print(sessionInfo(), local = FALSE)
 ```
+
