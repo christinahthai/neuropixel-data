@@ -140,6 +140,7 @@ A more in depth explanation on the structure of our data is that it is a binary 
 
 ## Visual of Brain Regions
 ```{r pressure, echo=FALSE, fig.cap="Probe Locations of Mouse Brain", out.width = '100%'}
+#need to download mouse_brain.jpg locally to output image properly
 knitr::include_graphics("mouse_brain.jpg")
 ```
 
