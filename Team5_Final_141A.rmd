@@ -23,12 +23,10 @@ Team ID: 5
 
 Name (tasks): Oscar Alvardo
 
-Name (tasks): Karshima Johnson
+Name (tasks): Karshima Johnson (Spike Trains and Spike Train Analysis, Statistics Regarding Neurons, Population and Study Design, Correlation Matrices for entire time frame, Visuals of Krebs, Data Transformation)
 
 Name (tasks): Christina Thai (Introduction, Background, Summary of Data, Visual of Probe Locations in Brain, Time Series Visual of Average Number of Neurons/Region, Kendall Tau's correlation)
 
-
-Auditor (tasks):
 
 ***
 
@@ -64,6 +62,43 @@ This report focuses on data collected from an experiment done with a mouse named
 
 This data set contains [spike trains](https://en.wikipedia.org/wiki/Neural_coding) of neurons in nine regions in the mouse brain.
 
+These spike trains for the duration of recording period are visualized as follows. Each point represents a neuron firing within its brain region at the given time period. A spike corresponds to all of the neural firings at a time frame. Each time frame index corresponds to 30ms. In total, we have 39053 time frames, corresponding to 1171.59s of recorded data for Krebs. Sequences of spikes, form a spike train such as follows. 
+
+```{r, echo = FALSE}
+brain_regions= ls(exp_data)[-c(1:3)]; 
+n_time= dim(exp_data$faceSVD)[2];
+n_sv = dim(exp_data$faceSVD)[1];
+
+plot_list = list()
+for(i_region in 1:9) {
+  time_range = c(0, n_time); # indices of time frame
+  
+  ### Extract the spike train for this region
+  spikes_this_region = exp_data[[brain_regions[i_region]]]
+  
+  ### Visualize the spike train 
+  n_neurons = dim(spikes_this_region)[1]; 
+  p = plot(x=0,y=0,pch=16,col="white",type="l",lwd=3,ylim=c(0,n_neurons),
+           xlim=time_range,cex.lab=1,cex.main=1,ylab='Neuron',xlab='Time frame',
+           main=paste0("Spike Train Region ", i_region, " Time ", time_range[1], 
+                       " to ", time_range[2]))
+  #yaxt='n',xaxt='n',
+  
+  for(i_neuron in 1:n_neurons){
+    spk_times =which(spikes_this_region[i_neuron,time_range[1]:time_range[2]]>0);
+    if (length(spk_times)>0){
+      points(y=rep(i_neuron,length(spk_times)),x=spk_times+time_range[1]-1,col="#000000",pch='.',cex=2)
+    }
+  }
+  
+  plot_list[[i_region]] = p
+}
+```
+
+Within the spike tains we notice that certain brain regions (e.g. Region 4) have missing spikes, which we believe could be a result of technological data or error in recording with the sensory probes.  
+
+
+
 The following represent elements of behavior data:
 `avgframe` Average Frame of Recording <br />
 `faceSVD` Singular Value Decompositon of Compressed Image of Face <br />
@@ -72,7 +107,7 @@ The following represent elements of behavior data:
 The data set being referenced `Reduced_Krebs.mat` contains the first 50 singular values and their masks. These are used to reproduce an image based on the average of the frames within the data set using infrared camera. 
 
 
-The following columns represent the nine regions for Kreubs in the mouse brain:
+The following columns represent the nine regions for Krebs in the mouse brain:
 
 `stall.CP` Caudate Putamen <br />
 `stall.FrMoCtx` Frontal Motor Cortex<br />
@@ -123,9 +158,29 @@ The initial study monitored large populations of neurons in awake head-fixed mic
 
 Further, the studies were testing in various settings such as with and without darkness and recordings in darkness or with a gray screen. They observed no differences between these recordings, thus we take it to imply that Krebs' sample data is representative of the mouse's overall behavior in this experiment[.](https://www.biorxiv.org/content/biorxiv/early/2018/04/22/306019.full.pdf) 
 
-In addition, we acknowledge that mouse models for genetic research prove to be excellent tools for insight into immune, endocrine, cardiovascular, skeletal, and in particular, nervous systems shared by mammals[.](https://www.genome.gov/10005834/background-on-mouse-as-a-model-organism) Thus conclusions obtained through the study may become applicable to humans.  
+In addition, we acknowledge that mouse models for genetic research prove to be excellent tools for insight into immune, endocrine, cardiovascular, skeletal, and in particular, nervous systems shared by mammals[.](https://www.genome.gov/10005834/background-on-mouse-as-a-model-organism) Thus conclusions obtained through the study may be a gateway to understanding the human brain.  
 
-##Kendall Tau's Correlation
+## Data Transformation
+
+In order to compare neural activity between brain regions (e.g. comparing the Primary Visual Cortex to the Midbrain), we consider the proportion of neurons firing at a given time frame (equivalent to 30ms) to the total number of neurons in the brain region. This will also be referred to as the amount of neural activity in a region at a given time or neural firing rate.  
+
+```{r, echo = FALSE}
+neurons.each.region <- data.frame()
+for (i in 1:9){
+  neurons.region.i <- dim(exp_data[[brain_regions[i]]])[1]
+  neurons.each.region <- rbind(neurons.each.region, neurons.region.i)
+}
+neurons.each.region <- as.data.frame(t(neurons.each.region))
+
+names(neurons.each.region) = c("CP","FrMoCtx","HPF",
+                                   "LS", "MB", "SC", "SoMoCtxx","TH","V1")
+rownames(neurons.each.region) <- c("Neurons per Region")
+knitr::kable(neurons.each.region, digits = 6,caption = "Neurons Per Brain Region")
+```
+
+
+## Kendall Tau's Correlation
+
 We choose to examine the pairwise correlations with Kendall's method with ranks since this method does not need any assumptions on the distribution. This non-parametric correlation method measures the number of discordant and concordant pairs.
 Assume there are pairs $(X_i, Y_i)$ and $(X_j,Y_j)$ where $i < j$. If $X_i < X_j$ and $Y_i < Y_j$, then $(X_i - X_j) \times (Y_i - Y_j) > 0$ and $(X_i, Y_i)$ and $(X_j,Y_j)$. Thus $(X_i, Y_i)$  $(X_j,Y_j)$ is a concordant pair and an increase in X implies an increase in Y.
 Similar logic is applied to the definition of discordant pairs, which can be seen in the mathematical definition: $(X_i - X_j) \times (Y_i - Y_j) < 0$. Tied pairs mean $(X_i - X_j) \times (Y_i - Y_j)  = 0$
@@ -134,39 +189,98 @@ If most pairs are concordant, then there is a postive linear relationship. Simil
 
 
 
-#Results
+# Results
 
-##Descriptive Anaysis
+## Descriptive Anaysis
 
--- Karishma will add (summary of data) !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Within our data, we observe the frequencies of neural firings from each brain region. 
 
+```{r, echo = FALSE, message = FALSE}
+t0 <- 0
+tn <- n_time
 
-```{r}
-spikes <- list()
-spike_trains <- list()
-#Code for extracting the spike trains
-getspike <- function(i_region, t1, t2) {
+hists <- list()
+neuron_count <- vector()
+neuron_avg_df_c <- data.frame()
+neuron_pt_mean <- vector()
+for(i_region in 1:9){
+  ### initialize time frame to work with
+  time_frame <- c(t0,tn)
   
-    time_range = c(t1,t2)
-      
   ### Extract the spike train for this region
   spikes_this_region = exp_data[[brain_regions[i_region]]]
-  n_neurons = dim(spikes_this_region)[1]; 
   
-  for(i_neuron in 1:n_neurons) {
-        spk_times=which(spikes_this_region[i_neuron,time_range[1]:time_range[2]]>0);
-        
-        spikes[i_neuron] <- list(spk_times);
-  }
+  ### number of neurons in i_region stored in vector
+  #neuron_count[i_region] <- dim(spikes_this_region)[1]
+  neuron_count <- dim(spikes_this_region)[1]
   
-  spike_trains[[i_region]] <- spikes[1:n_neurons]
+  ### neurons at given time frame 
+  neuron_time <- colSums(spikes_this_region) # sums binary ints per time_frame index
   
-  return(spike_trains)
+  ### number of neurons at given time given total neuron count
+  neurons_pt <- as.vector(neuron_time/neuron_count) 
+  
+  neuron_pt_mean[i_region] <- mean(neurons_pt)
+  
+  # neuron_hist <- hist(neurons_pt)
+  # hists[[i_region]] <- neuron_hist ## frequency of neurons at time / total neurons
+  
+  ### stores neuron time / total neurons for i_regions as data frame
+  neuron_avg_df_c <- rbind(neuron_avg_df_c,neurons_pt)
 }
-for (i in 1:9) {
-  spikes = getspike(i,0,n_time)
+
+neuron.avg.mat <- t(neuron_avg_df_c)
+neuron.avg.df <- as.data.frame(neuron.avg.mat)
+names(neuron.avg.df) <- c("CP","FrMoCtx","HPF",
+                            "LS", "MB", "SC", "SoMoCtxx","TH","V1")
+
+
+neurons.each.region <- data.frame()
+for (i in 1:9){
+  neurons.region.i <- dim(exp_data[[brain_regions[i]]])[1]
+  neurons.each.region <- rbind(neurons.each.region, neurons.region.i)
 }
+neurons.each.region <- as.data.frame(t(neurons.each.region))
+
+names(neurons.each.region) = c("CP","FrMoCtx","HPF",
+                                   "LS", "MB", "SC", "SoMoCtxx","TH","V1")
+rownames(neurons.each.region) <- c("Neurons per Region")
+
+neurons.each.region
+
 ```
+
+To highlight features of each brain region, we observe the maximum, minimum, average, and variance of proportion of fired neurons compared to total neurons per region. We do not include zero as a minimum for neural activity due to the fact that it represents a lack of activity, not within our interests.
+
+
+
+```{r, echo = FALSE}
+neuron_avg_df_c.mat <- as.matrix(neuron_avg_df_c)
+library(qlcMatrix)
+maxs <- as.vector(rowMax(neuron_avg_df_c.mat)) # maxs of firing rate 
+mins <- as.vector(rowMin(neuron_avg_df_c.mat, ignore.zero = TRUE)) # minimums of firing rate per region exclusing zero
+# avgs in neuron_pt_mean 
+neuron_pt_mean <- as.vector(neuron_pt_mean) # overall avg neuron firing rate per region
+library(matrixStats)
+vars <- as.vector(rowVars(neuron_avg_df_c.mat))  # variance of 
+
+require(Matrix)
+
+summary_stats <- as.data.frame(rbind(maxs, mins, neuron_pt_mean, vars))
+names(summary_stats) <- c("CP","FrMoCtx","HPF",
+                          "LS", "MB", "SC", "SoMoCtxx","TH","V1") # labels according to brain region
+rownames(summary_stats) <- c("Maximum Firing Rate", "Minimum Firing Rate", "Average Firing Rate", "Variance of Firing Rate")
+library(knitr)
+knitr::kable(summary_stats, digits = 6,caption = "Statistics Regarding Proportion of Firing Neurons")
+```
+
+It is notable that there are recorded neuron firing rates greater than one. This can be attributed to the fact that one time frame is equivalent to 30ms. It has been [recorded](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5611364/) that mice can have neurons fire multiple times in 30 ms, therefore it is logical to observe that the proportion of fired neurons in one time frame is larger than the total number of neurons within the region. 
+We note that the Midbrain has the highest maximum and average firing rate. This implies that the Midbrain has the most neural activity.... the Superior Colliculus has the highest minimum and 
+
+
+
+
+
 ##Reduced SVD Face
 ```{r eval=FALSE, include=FALSE}
 
@@ -196,7 +310,7 @@ dev.off()
 ```
 
 ##Average Number of Neurons
-```{r, echo = FALSE, warning = FALSE}
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 avg_neuron_list <- vector('list',9)
 var_neurons_list <- vector('list', 9)
 
@@ -240,12 +354,13 @@ dygraph(spike_data_frame) %>%
 
 
 
-From the above plot, we can see that the time from of most activity is between 20000 and 29000ms. Thus, we adjust our interval accordingly to analyze correlation.
+From the above plot, we can see that the time from of most activity is between 20000 and 29000 time frame indices. Thus, we adjust our interval accordingly to analyze correlation.
 
 We choose to examine correlation using the Kendall method. 
 
 
-##Reducing Variability in Each Region
+## Reducing Variability in Each Region
+
 Since plotting each proportion of neurons firing at each millisecond is extremely volatile, we proposed to analyze the average proportion of neurons firing at a new interval 1 through 1302 where each "time" is considered a time window of 30ms. 
 ```{r}
 #Initialize lists for average and variance of spikes
@@ -289,7 +404,8 @@ The above plot shows the variance of each 30ms time window for each brain region
 
 
 
-##Correlation Analysis
+## Correlation Analysis
+
 We choose to examine correlation using the Kendall method because it does not require the assumption of a linear relationship. 
 Another reason why we chose to use Kendall Tau's method for correlation because the ranking of data points mitigates the effects of outliers. 
 ```{r}
@@ -313,16 +429,17 @@ spikes.cor.pearson <- cor(spikes.cor.data)
 
 ```
 
-##Pearson's Correlation
+## Pearson's Correlation
+
 ```{r}
 #Plot Pearson Correlation Matrix
 corrplot(spikes.cor.pearson, method = "number", type = "lower")
 ```
 
 
-#Kendall's Correlation Matrix
-```{r}
+## Kendall's Correlation Matrix
 
+```{r}
 #Plot Kendall Tau Correlation Matrix
 corrplot(spikes.cor.kendall, method="number", type = "lower")
 ```
