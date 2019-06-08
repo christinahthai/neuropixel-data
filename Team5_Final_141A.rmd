@@ -31,6 +31,7 @@ Name (tasks): Christina Thai (Introduction, Background, Summary of Data, Visual 
 ***
 
 ## Introduction
+
 This document is the final report for the Spring 2019 course STA 141A at University of California, Davis. It seeks to examine whether activity in one region affects the activity in another region. 
 
 To reduce the variability of cortical responses to sensory stimuli, analyzing the neural spikes in multiple brain regions during spontaneous activity will yield more accurate, less noisy, results. 
@@ -40,6 +41,7 @@ Using the data gathered from contributors Nick Steinmetz, Marius Pachitariu, Car
 
 
 ## Background
+
 ```{r, message = FALSE, include=FALSE}
 library("R.matlab") # Install 'R.matlab' if this is the first time you call it.
 # Below VV Will vary depending on the local pathway for each computer
@@ -50,14 +52,25 @@ exp_data<- readMat(paste(ephysroot,mstr,'_reduced.mat',sep=''));
 # Check out data structure
 str(exp_data)
 ```
-
+```{r, message = FALSE, include=FALSE}
+library(png)
+library(grid)
+library(ggcorrplot)
+library(corrplot)
+library(knitr)
+library(matrixStats)
+library(qlcMatrix)
+library(png)
+library(grid)
+```
 
 In this project, we analyze the reduced data set `Reduced_Krebs.mat` containing Neuropixel recordings of a mouse named Krebs during spontaneous activity. The full data set can be found at this [webpage](https://janelia.figshare.com/articles/Eight-probe_Neuropixels_recordings_during_spontaneous_behaviors/7739750).
 
 The data used has already been preprocessed using a Matlab script, which can be found in the code Appendix of the report. 
 
 
-#Summary of Data
+# Summary of Data
+
 This report focuses on data collected from an experiment done with a mouse named Krebs. The neuron activation recorded from stimuli from whisking (measured by summed videographic motion energy within the whisker region).
 
 This data set contains [spike trains](https://en.wikipedia.org/wiki/Neural_coding) of neurons in nine regions in the mouse brain.
@@ -274,9 +287,11 @@ library(knitr)
 knitr::kable(summary_stats, digits = 6,caption = "Statistics Regarding Proportion of Firing Neurons")
 ```
 
-It is notable that there are recorded neuron firing rates greater than one. This can be attributed to the fact that one time frame is equivalent to 30ms. It has been [recorded](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5611364/) that mice can have neurons fire multiple times in 30 ms, therefore it is logical to observe that the proportion of fired neurons in one time frame is larger than the total number of neurons within the region. 
-We note that the Midbrain has the highest maximum and average firing rate. This implies that the Midbrain has the most neural activity.... the Superior Colliculus has the highest minimum and 
+It is notable that there are recorded neuron firing rates greater than one. This can be attributed to the fact that one time frame is equivalent to 30ms. It has been [recorded](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5611364/) that mice can have neurons fire multiple times in 30 ms, therefore it is logical to observe that the proportion of fired neurons in one time frame is larger than the total number of neurons within the region.
 
+We note that the Midbrain has the highest maximum and average firing rate. This implies that the Midbrain has the highest amount of neural activity throughout the entire recording. The Superior Colliculus has the largest minimum neural activity and variance. 
+
+In contrast, we observe that the Caudate Putamen yields the smallest maximum, average, and variance of neural activity and the Primary Visual Cortex has the lowest minimum neural activity.  
 
 
 
