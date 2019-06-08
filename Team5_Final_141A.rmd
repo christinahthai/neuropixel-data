@@ -61,6 +61,7 @@ library(matrixStats)
 library(qlcMatrix)
 library(dygraphs)
 library(dplyr)
+library(plotly)
 ```
 
 In this project, we analyze the reduced data set `Reduced_Krebs.mat` containing Neuropixel recordings of a mouse named Krebs during spontaneous activity. The full data set can be found at this [webpage](https://janelia.figshare.com/articles/Eight-probe_Neuropixels_recordings_during_spontaneous_behaviors/7739750).
@@ -170,23 +171,6 @@ Further, the studies were testing in various settings such as with and without d
 
 In addition, we acknowledge that mouse models for genetic research prove to be excellent tools for insight into immune, endocrine, cardiovascular, skeletal, and in particular, nervous systems shared by mammals[.](https://www.genome.gov/10005834/background-on-mouse-as-a-model-organism) Thus conclusions obtained through the study may be a gateway to understanding the human brain.  
 
-## Data Transformation
-
-In order to compare neural activity between brain regions (e.g. comparing the Primary Visual Cortex to the Midbrain), we consider the proportion of neurons firing at a given time frame (equivalent to 30ms) to the total number of neurons in the brain region. This will also be referred to as the amount of neural activity in a region at a given time or neural firing rate.  
-
-```{r, echo = FALSE}
-neurons.each.region <- data.frame()
-for (i in 1:9){
-  neurons.region.i <- dim(exp_data[[brain_regions[i]]])[1]
-  neurons.each.region <- rbind(neurons.each.region, neurons.region.i)
-}
-neurons.each.region <- as.data.frame(t(neurons.each.region))
-
-names(neurons.each.region) = c("CP","FrMoCtx","HPF",
-                                   "LS", "MB", "SC", "SoMoCtxx","TH","V1")
-rownames(neurons.each.region) <- c("Neurons per Region")
-knitr::kable(neurons.each.region, digits = 6,caption = "Neurons Per Brain Region")
-```
 
 
 ## Kendall Tau's Correlation
@@ -256,8 +240,27 @@ names(neurons.each.region) = c("CP","FrMoCtx","HPF",
                                    "LS", "MB", "SC", "SoMoCtxx","TH","V1")
 rownames(neurons.each.region) <- c("Neurons per Region")
 
-neurons.each.region
+knitr::kable(neurons.each.region, digits = 6,caption = "Neurons Per Brain Region")
+```
 
+In order to compare neural activity between brain regions (e.g. comparing the Primary Visual Cortex to the Midbrain), we consider the proportion of neurons firing at a given time frame (equivalent to 30ms) to the total number of neurons in the brain region. This will also be referred to as the amount of neural activity in a region at a given time or neural firing rate.  
+
+The frequencies of these firing rates can be observed as follows:
+
+```{r, echo = FALSE}
+library(plotly)
+p <- plot_ly(alpha = 0.5, width = 0.2, colors = "Spectral") %>%
+  add_histogram(x = neuron.avg.df$CP, name = "CP") %>%
+  add_histogram(x = neuron.avg.df$FrMoCtx, name = "FrMoCtx") %>%
+  add_histogram(x = neuron.avg.df$HPF, name = "HPF") %>%
+  add_histogram(x = neuron.avg.df$LS, name = "LS") %>%
+  add_histogram(x = neuron.avg.df$MB, name = "MB") %>%
+  add_histogram(x = neuron.avg.df$SC, name = "SC") %>%
+  add_histogram(x = neuron.avg.df$SoMoCtxx, name = "SoMoCtxx") %>%
+  add_histogram(x = neuron.avg.df$TH, name = "TH") %>%
+  add_histogram(x = neuron.avg.df$V1, name = "V1") %>%
+  layout(barmode = "overlay")
+p
 ```
 
 To highlight features of each brain region, we observe the maximum, minimum, average, and variance of proportion of fired neurons compared to total neurons per region. We do not include zero as a minimum for neural activity due to the fact that it represents a lack of activity, not within our interests.
@@ -439,6 +442,35 @@ corrplot(spikes.cor.kendall, method="number", type = "lower")
 ```
 Kendall's correlation is much smaller value, which we believe is due to the mitigation of outliers. 
 
+# Sensitivity Analysis 
+
+We consider the pairwise correlation between all brain regions for the entire recording period of 39053 time frames (1171.59s). Computing the correlation for the entirety of the recording period becomes increasingly taxing computationally when using the preferred Kendall Tau method. For this reason, we consider Pearson's method to give an idea of the strongest pairwise correlations for the entire recording period which are demonstrated as follows. 
+
+```{r, echo = FALSE, message = FALSE}
+corr.prop.neurons <- cor(neuron.avg.df)
+
+library(corrplot)
+corrplot(corr.prop.neurons, method = "number", type = "lower")
+```
+
+Further, as previously noted, there are some regions that have a lack of neural activity within the recording period. To attribute for that, we remove any time frame indices in which no neural activity was recorded for one or more brain regions. The following is the correlation plot for the data set with now removed outliers.  
+
+```{r, echo = FALSE, message = FALSE}
+neur_mat_red <- t(neuron_avg_df_c)
+row_sub <- apply(neur_mat_red,1, function(row) all(row!=0))
+neur_mat_red <- neur_mat_red[row_sub,]
+
+
+
+neur_df_red <- as.data.frame(neur_mat_red)
+names(neur_df_red) <-  c("CP","FrMoCtx","HPF",
+                         "LS", "MB", "SC", "SoMoCtxx","TH","V1")
+corr.red.nuerons <- cor(neur_df_red)
+corrplot(corr.red.nuerons, method = "number", type = "lower") ## correlation plot for reduced model
+
+```
+
+**Note** the number of removed rows from the initial data set is `r dim(neuron_avg_df_c)[2] - dim(t(neur_mat_red))[2]`
 
 # Discussion
 This project shed light on how to better visualize spike trains. Although our analysis was relatively elementary, visualizing spike trains is the first step to supplement more comprehensive studies. We hope this visual tool can be replicated on other neural pixel datasets as well. 
