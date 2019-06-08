@@ -62,6 +62,7 @@ library(matrixStats)
 library(qlcMatrix)
 library(png)
 library(grid)
+library(plotly)
 ```
 
 In this project, we analyze the reduced data set `Reduced_Krebs.mat` containing Neuropixel recordings of a mouse named Krebs during spontaneous activity. The full data set can be found at this [webpage](https://janelia.figshare.com/articles/Eight-probe_Neuropixels_recordings_during_spontaneous_behaviors/7739750).
@@ -171,23 +172,6 @@ Further, the studies were testing in various settings such as with and without d
 
 In addition, we acknowledge that mouse models for genetic research prove to be excellent tools for insight into immune, endocrine, cardiovascular, skeletal, and in particular, nervous systems shared by mammals[.](https://www.genome.gov/10005834/background-on-mouse-as-a-model-organism) Thus conclusions obtained through the study may be a gateway to understanding the human brain.  
 
-## Data Transformation
-
-In order to compare neural activity between brain regions (e.g. comparing the Primary Visual Cortex to the Midbrain), we consider the proportion of neurons firing at a given time frame (equivalent to 30ms) to the total number of neurons in the brain region. This will also be referred to as the amount of neural activity in a region at a given time or neural firing rate.  
-
-```{r, echo = FALSE}
-neurons.each.region <- data.frame()
-for (i in 1:9){
-  neurons.region.i <- dim(exp_data[[brain_regions[i]]])[1]
-  neurons.each.region <- rbind(neurons.each.region, neurons.region.i)
-}
-neurons.each.region <- as.data.frame(t(neurons.each.region))
-
-names(neurons.each.region) = c("CP","FrMoCtx","HPF",
-                                   "LS", "MB", "SC", "SoMoCtxx","TH","V1")
-rownames(neurons.each.region) <- c("Neurons per Region")
-knitr::kable(neurons.each.region, digits = 6,caption = "Neurons Per Brain Region")
-```
 
 
 ## Kendall Tau's Correlation
@@ -204,7 +188,7 @@ If most pairs are concordant, then there is a postive linear relationship. Simil
 
 ## Descriptive Anaysis
 
-Within our data, we observe the frequencies of neural firings from each brain region. 
+Each brain region's probe obtains data from the neurons within the region to determine when these neurons fire. We consider the number of neurons within each respective region.
 
 ```{r, echo = FALSE, message = FALSE}
 t0 <- 0
@@ -256,10 +240,30 @@ neurons.each.region <- as.data.frame(t(neurons.each.region))
 names(neurons.each.region) = c("CP","FrMoCtx","HPF",
                                    "LS", "MB", "SC", "SoMoCtxx","TH","V1")
 rownames(neurons.each.region) <- c("Neurons per Region")
-
-neurons.each.region
+knitr::kable(neurons.each.region, digits = 6,caption = "Neurons Per Brain Region")
 
 ```
+
+In order to compare neural activity between brain regions (e.g. comparing the Primary Visual Cortex to the Midbrain), we consider the proportion of neurons firing at a given time frame (equivalent to 30ms) to the total number of neurons in the brain region. This will also be referred to as the amount of neural activity in a region at a given time or neural firing rate.  
+
+The frequencies of these firing rates can be observed as follows:
+
+```{r, echo = FALSE}
+library(plotly)
+p <- plot_ly(alpha = 0.5, width = 0.2, colors = "Spectral") %>%
+  add_histogram(x = neuron.avg.df$CP, name = "CP") %>%
+  add_histogram(x = neuron.avg.df$FrMoCtx, name = "FrMoCtx") %>%
+  add_histogram(x = neuron.avg.df$HPF, name = "HPF") %>%
+  add_histogram(x = neuron.avg.df$LS, name = "LS") %>%
+  add_histogram(x = neuron.avg.df$MB, name = "MB") %>%
+  add_histogram(x = neuron.avg.df$SC, name = "SC") %>%
+  add_histogram(x = neuron.avg.df$SoMoCtxx, name = "SoMoCtxx") %>%
+  add_histogram(x = neuron.avg.df$TH, name = "TH") %>%
+  add_histogram(x = neuron.avg.df$V1, name = "V1") %>%
+  layout(barmode = "overlay")
+p
+```
+
 
 To highlight features of each brain region, we observe the maximum, minimum, average, and variance of proportion of fired neurons compared to total neurons per region. We do not include zero as a minimum for neural activity due to the fact that it represents a lack of activity, not within our interests.
 
