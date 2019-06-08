@@ -6,6 +6,7 @@ output:
     fig_caption: yes
     number_sections: yes
   pdf_document: default
+  runtime: shiny
 ---
 
 <style type="text/css">
@@ -62,6 +63,7 @@ library(qlcMatrix)
 library(dygraphs)
 library(dplyr)
 library(plotly)
+library(shiny)
 ```
 
 In this project, we analyze the reduced data set `Reduced_Krebs.mat` containing Neuropixel recordings of a mouse named Krebs during spontaneous activity. The full data set can be found at this [webpage](https://janelia.figshare.com/articles/Eight-probe_Neuropixels_recordings_during_spontaneous_behaviors/7739750).
@@ -77,23 +79,42 @@ This data set contains [spike trains](https://en.wikipedia.org/wiki/Neural_codin
 
 These spike trains for the duration of recording period are visualized as follows. Each point represents a neuron firing within its brain region at the given time period. A spike corresponds to all of the neural firings at a time frame. Each time frame index corresponds to 30ms. In total, we have 39053 time frames, corresponding to 1171.59s of recorded data for Krebs. Sequences of spikes, form a spike train such as follows. 
 
-```{r, echo = FALSE}
-brain_regions= ls(exp_data)[-c(1:3)]; 
+```{r echo = FALSE}
+selectInput("region", "Choose a brain region",
+            choices = c("Caudate Putamen (CP)","Frontal Motor Cortex (FrMoCtx)","Hippocampal Formation (HPF)",
+            "Lateral Septum (LS)", "Midbrain (MB)", "Superior Colliculus (SC)", "Somatomotor Cortex (SoMoCtxx)","Thalamus (TH)","Primary Visual Cortex (V1)" ))
+
+i_chosen <- reactive({
+  switch(input$region,
+        "Caudate Putamen (CP)" = 1,
+        "Frontal Motor Cortex (FrMoCtx)" = 2,
+        "Hippocampal Formation (HPF)" = 3,
+        "Lateral Septum (LS)" = 4,
+        "Midbrain (MB)" = 5,
+        "Superior Colliculus (SC)" = 6,
+        "Somatomotor Cortex (SoMoCtxx)" = 7,
+        "Thalamus (TH)" = 8,
+        "Primary Visual Cortex (V1)" = 9
+        )
+})
+
+brain_regions= ls(exp_data)[-c(1:3)];
 n_time= dim(exp_data$faceSVD)[2];
 n_sv = dim(exp_data$faceSVD)[1];
 
-plot_list = list()
-for(i_region in 1:9) {
+spiketrain.chosen <- function(i_region){
+# plot_list = list()
+# for(i_region in 1:9) {
   time_range = c(0, n_time); # indices of time frame
   
   ### Extract the spike train for this region
   spikes_this_region = exp_data[[brain_regions[i_region]]]
   
-  ### Visualize the spike train 
-  n_neurons = dim(spikes_this_region)[1]; 
+  ### Visualize the spike train
+  n_neurons = dim(spikes_this_region)[1];
   p = plot(x=0,y=0,pch=16,col="white",type="l",lwd=3,ylim=c(0,n_neurons),
            xlim=time_range,cex.lab=1,cex.main=1,ylab='Neuron',xlab='Time frame',
-           main=paste0("Spike Train Region ", i_region, " Time ", time_range[1], 
+           main=paste0("Spike Train Region ", i_region, " Time ", time_range[1],
                        " to ", time_range[2]))
   #yaxt='n',xaxt='n',
   
@@ -104,9 +125,17 @@ for(i_region in 1:9) {
     }
   }
   
-  plot_list[[i_region]] = p
+
 }
+
+
+renderPlot({
+   spiketrain.chosen(i_region = i_chosen()) 
+})
+
+
 ```
+
 
 Within the spike tains we notice that certain brain regions (e.g. Region 4) have missing spikes, which we believe could be a result of technological data or error in recording with the sensory probes.  
 
