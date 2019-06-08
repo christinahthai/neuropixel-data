@@ -136,15 +136,13 @@ The data set contains spike trains of neurons in nine regions of the mouse brain
 
 A more in depth explanation on the structure of our data is that it is a binary matrix with values of 1 denoting an existance of neural activity and 0 being that there is no neural activity at the specific time frame. Each row represents a neuron within the region. 
 
-
 ## Visual of Brain Regions
-```{r, fig.width=50, fig.height=50,echo=FALSE}
-#Image for the regions of the brain
-library(png)
-library(grid)
-img <- readPNG("/Users/christinathai/Desktop/R_programming/STA_141A/Project/mouse_brain.png")
- grid.raster(img)
+```{r pressure, echo=FALSE, fig.cap="Probe Locations of Mouse Brain", out.width = '100%'}
+knitr::include_graphics("mouse_brain.jpg")
 ```
+
+
+
 The figure above is the reconstructed probe locations of recordings in Krebs. The poles are generated using the borders of the brain regions and map depth of the region in microns relative to position of the principal axes of the body (AP/DV/LR). 
 
 **Note:** AP refers the antero-posterior, DV refers to the dorso-ventral, and LR refers to the left-right axis formation.
