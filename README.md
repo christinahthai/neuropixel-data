@@ -95,6 +95,6 @@ The figure above is the reconstructed probe locations of recordings in Krebs. Th
 * Data Transformation
 
 
-### Acknowledgements
+## Acknowledgements
 
-Images gathered from reference [bioRxiv paper](https://www.biorxiv.org/content/early/2018/10/19/447995).
+Brain grid code gathered from reference [bioRxiv paper](https://www.biorxiv.org/content/early/2018/10/19/447995).
