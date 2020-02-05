@@ -11,6 +11,8 @@ library(R.matlab)
 
 ephysroot = 'C:/Users/karis/Desktop/'; # path of the data set 
 mstr = 'Krebs'; # mouse names
+
+
 ### Load saved data:
 exp_data<- readMat(paste(ephysroot,mstr,'_reduced.mat',sep=''));
 # check out data structure
@@ -32,7 +34,13 @@ for(i_region in 1:9) {
       
       ### Visualize the spike train 
       n_neurons = dim(spikes_this_region)[1]; 
-      p = plot(x=0,y=0,pch=16,col="white",type="l",lwd=3,ylim=c(0,n_neurons),
+      p = plot(x=0,
+            y=0,
+            pch=16,
+            col="white",
+            type="l",
+            lwd=3,
+            ylim=c(0,n_neurons),
                xlim=time_range,cex.lab=1,cex.main=1,ylab='Neuron',xlab='Time frame',
                main=paste0("Spike Train Region ", i_region, " Time ", time_range[1], 
                 " to ", time_range[2]))
